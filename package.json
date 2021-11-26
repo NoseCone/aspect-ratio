@@ -1,11 +1,14 @@
 {
   "repository": {
-    "url": "https://github.com/davedawkins/sutil-template-elmish.git"
+    "url": "https://github.com/NoseCone/aspect-ratio.git"
   },
   "private": true,
   "scripts": {
-    "start": "dotnet fable watch src/App --run webpack serve",
+    "dev": "dotnet fable watch src/App --run webpack serve",
     "build": "dotnet fable       src/App --run webpack --mode production"
+  },
+  "devDependencies": {
+    "sass": "^1.43.4"
   },
   "dependencies": {
     "webpack": "^5.11.0",

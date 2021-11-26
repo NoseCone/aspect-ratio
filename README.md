@@ -1,15 +1,37 @@
-## Sutil Template for Elmish
+# Flare Timing in Sutil
 
-The simplest Sutil Elmish application. This gives you a development area and shows how a single page Elmish application is constructed and mounted with minimal styling. See
-- src/App/App.fs.
-- public/index.html
-
-### Quick Start
-
+Before developing or building for deployment run:
 ```
-    git clone -s https://github.com/davedawkins/sutil-template-elmish.git
-    cd sutil-template-elmish
-    dotnet tool restore
-    npm install
-    npm run start
+> dotnet tool restore
+> npm install
+```
+
+## Developing
+Work on the stylesheet `site.sass` with:
+```bash
+> cd src
+> sass --watch site.sass:site.css --load-path ../node_modules
+```
+Install dependencies with `npm install` (or `pnpm install` or `yarn`) and start a development server with:
+```bash
+npm run dev
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+## Building
+Build the stylesheet `site.css` with:
+```bash
+> cd src
+> sass site.sass:site.css --load-path ../node_modules
+```
+
+Build for deployment with:
+```bash
+npm run build
+```
+> You can preview the built app with `npm run preview`. This should _not_ be used to serve your app in production.
+## Publishing
+Build on branch `develop`, switch to branch `main` and then copy the build to the root, commit and push.
+```bash
+> cp -a build/ .
 ```

@@ -60,4 +60,4 @@ let view() =
         ]]
 
 // Start the app
-view() |> Program.mountElement "sutil-app"
+view() |> Program.mountElement "sutil"
