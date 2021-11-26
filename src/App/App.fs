@@ -4,60 +4,55 @@ open Sutil
 open Sutil.DOM
 open Sutil.Attr
 
-type Model = { Counter : int }
+type Page = | PickComp | CompSettings | CompTasks | CompPilots
 
-// Model helpers
-let getCounter m = m.Counter
-
-type Message =
-    | Increment
-    | Decrement
-
-let init () : Model = { Counter = 0 }
+type Model = { Page : Page }
+type Message = | SetPage of Page
+let init () : Model = { Page = PickComp }
+let getPage (m : Model) = m.Page
 
 let update (msg : Message) (model : Model) : Model =
     match msg with
-    |Increment -> { model with Counter = model.Counter + 1 }
-    |Decrement -> { model with Counter = model.Counter - 1 }
+    | SetPage page -> { model with Page = page }
 
 // In Sutil, the view() function is called *once*
 let view() =
 
-    // model is an IStore<ModeL>
-    // This means we can write to it if we want, but when we're adopting
-    // Elmish, we treat it like an IObservable<Model>
     let model, dispatch = () |> Store.makeElmishSimple init update ignore
 
     Html.div [
         // Get used to doing this for components, even though this is a top-level app.
         disposeOnUnmount [ model ]
 
-        // See Sutil.Styling for more advanced styling options
-        style [
-            Css.fontFamily "Arial, Helvetica, sans-serif"
-            Css.margin 20
-        ]
-
         // Think of this line as
         // text $"Counter = {model.counter}"
-        Bind.fragment (model |> Store.map getCounter) <| fun n ->
-            text $"Counter = {n}"
+        Bind.fragment (model |> Store.map getPage) <| fun n ->
+            text $"Page = {n}"
 
         Html.div [
             Html.button [
-                class' "button" // Bulma styling, included in index.html
-
-                // Dispatching is as for normal ELmish. Sutil event handlers take an extra options array though
-                onClick (fun _ -> dispatch Decrement) []
-                text "-"
+                class' "button"
+                onClick (fun _ -> dispatch <| SetPage PickComp) []
+                text "Comps"
             ]
 
             Html.button [
                 class' "button"
-                onClick (fun _ -> dispatch Increment) []
-                text "+"
+                onClick (fun _ -> dispatch <| SetPage CompSettings) []
+                text "Settings"
+            ]
+
+            Html.button [
+                class' "button"
+                onClick (fun _ -> dispatch <| SetPage CompTasks) []
+                text "Tasks"
+            ]
+
+            Html.button [
+                class' "button"
+                onClick (fun _ -> dispatch <| SetPage CompPilots) []
+                text "Pilots"
             ]
         ]]
 
-// Start the app
 view() |> Program.mountElement "sutil"
