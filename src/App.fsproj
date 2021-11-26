@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,6 +7,7 @@
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>
-      <PackageReference Include="Sutil" Version="1.0.0-*" />
+    <PackageReference Include="Sutil" Version="1.0.0-*" />
   </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

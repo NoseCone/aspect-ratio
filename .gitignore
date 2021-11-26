@@ -11,3 +11,4 @@ bundle.js
 build
 src/site.css
 *.map
+.paket/Paket.Restore.targets
