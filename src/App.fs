@@ -15,21 +15,34 @@ let update (msg : Message) (model : Model) : Model =
     match msg with
     | SetPage page -> { model with Page = page }
 
-// In Sutil, the view() function is called *once*
+let breadcrumb (compName: string) = Html.nav [
+        class' "breadcrumb"
+        Html.ul [
+            Html.li [
+                Html.a [
+                    Attr.href "/"
+                    text "Leading Edge (Feliz)"
+                ]
+            ]
+            Html.li [
+                class' "is-active"
+                text compName
+            ]
+        ]
+    ]
+
 let view() =
 
     let model, dispatch = () |> Store.makeElmishSimple init update ignore
 
     Html.div [
-        // Get used to doing this for components, even though this is a top-level app.
         disposeOnUnmount [ model ]
 
-        // Think of this line as
-        // text $"Counter = {model.counter}"
-        Bind.fragment (model |> Store.map getPage) <| fun n ->
-            text $"Page = {n}"
+        Bind.fragment (model |> Store.map getPage) <| fun n -> text $"Page = {n}"
 
         Html.div [
+            breadcrumb "COMP"
+
             Html.button [
                 class' "button"
                 onClick (fun _ -> dispatch <| SetPage PickComp) []
