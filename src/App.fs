@@ -4,34 +4,7 @@ open Sutil
 open Sutil.DOM
 open Sutil.Attr
 
-type Page = | PickComp | CompSettings | CompTasks | CompPilots
-type CompTab = Settings | Tasks | Pilots
-
-let pageToTab : Page -> CompTab option = function
-    | PickComp -> None
-    | CompSettings -> Some Settings
-    | CompTasks -> Some Tasks
-    | CompPilots -> Some Pilots
-
-let tabToPage : CompTab -> Page = function
-    | Settings -> CompSettings
-    | Tasks -> CompTasks
-    | Pilots -> CompPilots
-
-type Model = { Page : Page }
-
-type Message =
-    | SetPage of Page
-    | SetTab of CompTab option
-
-let init () : Model = { Page = PickComp }
-let getPage (m : Model): Page = m.Page
-let getTab (m : Model): CompTab option = pageToTab m.Page
-
-let update (msg : Message) (model : Model) : Model =
-    match msg with
-    | SetPage page -> { model with Page = page }
-    | SetTab tab -> { model with Page = tab |> Option.map tabToPage |> Option.defaultValue PickComp }
+open Types
 
 let breadcrumb (compName: string) = Html.nav [
         class' "breadcrumb"
@@ -51,7 +24,7 @@ let breadcrumb (compName: string) = Html.nav [
 
 let spacer = Html.div [ class' "spacer" ]
 
-let compTabs (setTab: CompTab -> Unit) (tab: CompTab): SutilElement =
+let compTabs (setTab: Tab -> Unit) (tab: Tab): SutilElement =
     let isActive expected = if tab = expected then "is-active" else ""
     Html.div [
         class' "tabs"
@@ -74,54 +47,56 @@ let compTabs (setTab: CompTab -> Unit) (tab: CompTab): SutilElement =
         ]
     ]
 
-let view() =
+let view () =
 
-    let model, dispatch = Store.makeElmishSimple init update ignore ()
+    let page = Store.make PickComp
+    let tab: IStore<Tab option> = Store.make None
+
+    let setPage p _ = page |> Store.modify (fun _ -> p)
+    let setTab t = tab |> Store.modify (fun _ -> t)
 
     Html.div [
-        disposeOnUnmount [ model ]
-
-        Bind.fragment (Store.map getPage model) <| fun n -> text $"Page = {n}"
+        disposeOnUnmount [ page; tab ]
 
         Html.div [
-            breadcrumb "COMP"
-
-            Bind.fragment (Store.map getPage model) <| function
-                | PickComp -> Comps.view
-                | CompSettings -> Html.pre [ text "Settings" ]
-                | CompTasks -> Html.pre [ text "Tasks" ]
-                | CompPilots -> Html.pre [ text "Pilots" ]
-
-            Bind.fragment (Store.map getTab model) <| function
-                | None -> Html.div []
-                | Some tab ->
-                    compTabs
-                        (dispatch << SetTab << Some)
-                        tab
-
             Html.button [
                 class' "button"
-                onClick (fun _ -> dispatch <| SetPage PickComp) []
+                onClick (setPage PickComp) []
                 text "Comps"
             ]
 
             Html.button [
                 class' "button"
-                onClick (fun _ -> dispatch <| SetPage CompSettings) []
+                onClick (setPage CompSettings) []
                 text "Settings"
             ]
 
             Html.button [
                 class' "button"
-                onClick (fun _ -> dispatch <| SetPage CompTasks) []
+                onClick (setPage CompTasks) []
                 text "Tasks"
             ]
 
             Html.button [
                 class' "button"
-                onClick (fun _ -> dispatch <| SetPage CompPilots) []
+                onClick (setPage CompPilots) []
                 text "Pilots"
             ]
-        ]]
 
-view() |> Program.mountElement "sutil"
+            Bind.el(tab, function
+                | None -> Html.div []
+                | Some tab -> compTabs (setTab << Some) tab)
+        ]
+
+        Bind.el(page, fun p -> text $"Page = {p}")
+
+        breadcrumb "COMP"
+
+        Bind.el(page, function
+            | PickComp -> Comps.view (page, tab)
+            | CompSettings -> Html.pre [ text "Settings" ]
+            | CompTasks -> Html.pre [ text "Tasks" ]
+            | CompPilots -> Html.pre [ text "Pilots" ])
+    ]
+
+view () |> Program.mountElement "sutil"

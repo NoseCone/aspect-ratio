@@ -4,7 +4,9 @@ open Sutil
 open Sutil.DOM
 open Sutil.Attr
 
-let view =
+open Types
+
+let view (page: IStore<Page>, tab: IStore<Tab option>) =
     Html.div [
         Attr.id "content"
         class' "content"

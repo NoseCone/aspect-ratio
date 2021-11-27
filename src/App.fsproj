@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Types.fs" />
     <Compile Include="Comps.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
