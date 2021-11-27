@@ -76,7 +76,7 @@ let compTabs (setTab: CompTab -> Unit) (tab: CompTab): SutilElement =
 
 let view() =
 
-    let model, dispatch = () |> Store.makeElmishSimple init update ignore
+    let model, dispatch = Store.makeElmishSimple init update ignore ()
 
     Html.div [
         disposeOnUnmount [ model ]
@@ -85,6 +85,12 @@ let view() =
 
         Html.div [
             breadcrumb "COMP"
+
+            Bind.fragment (Store.map getPage model) <| function
+                | PickComp -> Comps.view
+                | CompSettings -> Html.pre [ text "Settings" ]
+                | CompTasks -> Html.pre [ text "Tasks" ]
+                | CompPilots -> Html.pre [ text "Pilots" ]
 
             Bind.fragment (Store.map getTab model) <| function
                 | None -> Html.div []
