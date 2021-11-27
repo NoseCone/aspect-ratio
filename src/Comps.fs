@@ -6,7 +6,12 @@ open Sutil.Attr
 
 open Types
 
-let view (page: IStore<Page>, tab: IStore<Tab option>) =
+let view (compPrefix: IStore<CompPrefix>, page: IStore<Page>, tab: IStore<Tab>) =
+    let comp s _ =
+            compPrefix |> Store.modify (fun _ -> CompPrefix s)
+            page |> Store.modify (fun _ -> PageComp)
+            tab |> Store.modify (fun _ -> TabTasks)
+
     Html.div [
         Attr.id "content"
         class' "content"
@@ -62,19 +67,19 @@ let view (page: IStore<Page>, tab: IStore<Tab option>) =
                                     Html.li [
                                         text "Italian Open "
                                         Html.a [
-                                            Attr.href "#/comp-prefix/2020-italy-open"
+                                            onClick (comp "2020-italy-open") []
                                             text "2020"
                                         ]
                                     ]
                                     Html.li [
                                         text "Dalmatian "
                                         Html.a [
-                                            Attr.href "#/comp-prefix/2019-dalmatian"
+                                            onClick (comp "2019-dalmatian") []
                                             text "2019"
                                         ]
                                         text " "
                                         Html.a [
-                                            Attr.href "#/comp-prefix/2018-dalmatian"
+                                            onClick (comp "2018-dalmatian") []
                                             text "2018"
                                         ]
                                     ]
@@ -94,13 +99,13 @@ let view (page: IStore<Page>, tab: IStore<Tab option>) =
                                 Html.ul [
                                     Html.li [
                                         Html.a [
-                                            Attr.href "#/comp-prefix/1976-never-land"
+                                            onClick (comp "1976-never-land") []
                                             text "1976 Never Land"
                                         ]
                                     ]
                                     Html.li [
                                         Html.a [
-                                            Attr.href "#/comp-prefix/1989-lift-lines"
+                                            onClick (comp "1989-lift-lines") []
                                             text "1989 Lift Lines"
                                         ]
                                     ]
@@ -132,39 +137,39 @@ let view (page: IStore<Page>, tab: IStore<Tab option>) =
                                 Html.li [
                                     text "Forbes Flatlands "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2018-forbes"
+                                        onClick (comp "2018-forbes") []
                                         text "2018"
                                     ]
                                     text " "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2017-forbes"
+                                        onClick (comp "2017-forbes") []
                                         text "2017"
                                     ]
                                     text " "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2016-forbes"
+                                        onClick (comp "2016-forbes") []
                                         text "2016"
                                     ]
                                     text " "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2015-forbes"
+                                        onClick (comp "2015-forbes") []
                                         text "2015"
                                     ]
                                     text " "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2014-forbes"
+                                        onClick (comp "2014-forbes") []
                                         text "2014"
                                     ]
                                     text " "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2012-forbes"
+                                        onClick (comp "2012-forbes") []
                                         text "2012"
                                     ]
                                 ]
                                 Html.li [
                                     text "Dalby Big Air "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2017-dalby"
+                                        onClick (comp "2017-dalby") []
                                         text "2017"
                                     ]
                                 ]
@@ -176,14 +181,14 @@ let view (page: IStore<Page>, tab: IStore<Tab option>) =
                                 Html.li [
                                     text "Meduno "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2020-meduno"
+                                        onClick (comp "2020-meduno") []
                                         text "2020"
                                     ]
                                 ]
                                 Html.li [
                                     text "Tolmezzo "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2019-italy"
+                                        onClick (comp "2019-italy") []
                                         text "2019"
                                     ]
                                 ]
@@ -195,26 +200,26 @@ let view (page: IStore<Page>, tab: IStore<Tab option>) =
                                 Html.li [
                                     text "Green Swamp Klassic 2016 "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2016-greenswamp"
+                                        onClick (comp "2016-greenswamp") []
                                         text "Topless"
                                     ]
                                     text " "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2016-greenswamp-sport"
+                                        onClick (comp "2016-greenswamp-sport") []
                                         text "Kingposted"
                                     ]
                                 ]
                                 Html.li [
                                     text "Big Spring "
                                     Html.a [
-                                        Attr.href "2016-big-spring"
+                                        onClick (comp "2016-big-spring") []
                                         text "2016"
                                     ]
                                 ]
                                 Html.li [
                                     text "QuestAir Open "
                                     Html.a [
-                                        Attr.href "#/comp-prefix/2016-quest"
+                                        onClick (comp "2016-quest") []
                                         text "2016"
                                     ]
                                 ]

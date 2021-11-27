@@ -30,18 +30,18 @@ let compTabs (setTab: Tab -> Unit) (tab: Tab): SutilElement =
         class' "tabs"
         Html.ul [
             Html.li [
-                class' (isActive Settings)
-                onClick (fun _ -> setTab Settings) []
+                class' (isActive TabSettings)
+                onClick (fun _ -> setTab TabSettings) []
                 Html.a [ text "Settings" ]
             ]
             Html.li [
-                class' (isActive Tasks)
-                onClick (fun _ -> setTab Tasks) []
+                class' (isActive TabTasks)
+                onClick (fun _ -> setTab TabTasks) []
                 Html.a [ text "Tasks" ]
             ]
             Html.li [
-                class' (isActive Pilots)
-                onClick (fun _ -> setTab Pilots) []
+                class' (isActive TabPilots)
+                onClick (fun _ -> setTab TabPilots) []
                 Html.a [ text "Pilots" ]
             ]
         ]
@@ -49,10 +49,11 @@ let compTabs (setTab: Tab -> Unit) (tab: Tab): SutilElement =
 
 let view () =
 
-    let page = Store.make PickComp
-    let tab: IStore<Tab option> = Store.make None
+    let compPrefix = Store.make (CompPrefix "")
+    let page = Store.make PageComps
+    let tab= Store.make TabTasks
 
-    let setPage p _ = page |> Store.modify (fun _ -> p)
+    let setPage p = page |> Store.modify (fun _ -> p)
     let setTab t = tab |> Store.modify (fun _ -> t)
 
     Html.div [
@@ -61,42 +62,36 @@ let view () =
         Html.div [
             Html.button [
                 class' "button"
-                onClick (setPage PickComp) []
+                onClick (fun _ -> setPage PageComps) []
                 text "Comps"
             ]
 
             Html.button [
                 class' "button"
-                onClick (setPage CompSettings) []
-                text "Settings"
+                onClick (fun _ -> setPage PageComp) []
+                text "Comp"
             ]
-
-            Html.button [
-                class' "button"
-                onClick (setPage CompTasks) []
-                text "Tasks"
-            ]
-
-            Html.button [
-                class' "button"
-                onClick (setPage CompPilots) []
-                text "Pilots"
-            ]
-
-            Bind.el(tab, function
-                | None -> Html.div []
-                | Some tab -> compTabs (setTab << Some) tab)
         ]
 
+        spacer
+        Bind.el(compPrefix, fun cp -> text $"CompPrefix = {cp}")
+        spacer
         Bind.el(page, fun p -> text $"Page = {p}")
+        spacer
 
         breadcrumb "COMP"
 
         Bind.el(page, function
-            | PickComp -> Comps.view (page, tab)
-            | CompSettings -> Html.pre [ text "Settings" ]
-            | CompTasks -> Html.pre [ text "Tasks" ]
-            | CompPilots -> Html.pre [ text "Pilots" ])
+            | PageComps -> Comps.view (compPrefix, page, tab)
+            | PageComp ->
+                fragment [
+                    Bind.el(tab, fun t -> compTabs setTab t)
+
+                    Bind.el(tab, function
+                        | TabSettings -> Html.pre [ text "Settings" ]
+                        | TabTasks -> Html.pre [ text "Tasks" ]
+                        | TabPilots -> Html.pre [ text "Pilots" ])
+                ])
     ]
 
 view () |> Program.mountElement "sutil"
