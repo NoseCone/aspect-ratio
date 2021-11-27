@@ -81,12 +81,12 @@ let view() =
     Html.div [
         disposeOnUnmount [ model ]
 
-        Bind.fragment (model |> Store.map getPage) <| fun n -> text $"Page = {n}"
+        Bind.fragment (Store.map getPage model) <| fun n -> text $"Page = {n}"
 
         Html.div [
             breadcrumb "COMP"
 
-            Bind.fragment (model |> Store.map getTab) <| function
+            Bind.fragment (Store.map getTab model) <| function
                 | None -> Html.div []
                 | Some tab ->
                     compTabs
