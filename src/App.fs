@@ -5,6 +5,10 @@ open Sutil.DOM
 open Sutil.Attr
 
 open Types
+open CompSettings
+open CompTasks
+open CompPilots
+open CompHeader
 
 let breadcrumb (compName: string) = Html.nav [
         class' "breadcrumb"
@@ -57,27 +61,63 @@ let view () =
     let taskLengths = Store.make []
 
     let page = Store.make PageComps
-    let tab = Store.make TabTasks
+    let activeTab = Store.make TabTasks
 
     let setPage p = page |> Store.modify (fun _ -> p)
-    let setTab t = tab |> Store.modify (fun _ -> t)
+    let setActiveTab t = activeTab |> Store.modify (fun _ -> t)
 
     Html.div [
-        disposeOnUnmount [ page; tab ]
+        disposeOnUnmount [
+            compPrefix
+            comp
+            nominals
+            compTasks
+            compPilots
+            taskLengths
+            page
+            activeTab
+        ]
 
         Bind.el(page, function
             | PageComps ->
-                Comps.view compPrefix comp nominals compTasks compPilots taskLengths page tab
+                Comps.view compPrefix comp nominals compTasks compPilots taskLengths page activeTab
             | PageComp ->
                 fragment [
                     Bind.el(comp, fun c -> breadcrumb c.compName)
 
-                    Bind.el(tab, fun t -> compTabs setTab t)
-
-                    Bind.el(tab, function
-                        | TabSettings -> Html.pre [ text "Settings" ]
-                        | TabTasks -> Html.pre [ text "Tasks" ]
-                        | TabPilots -> Html.pre [ text "Pilots" ])
+                    Bind.el(activeTab, function
+                        | TabTasks ->
+                            Html.div
+                                [ spacer
+                                ; Bind.el2 comp nominals (fun (c, ns) -> compHeader c ns)
+                                ; spacer
+                                ; Bind.el(comp, fun c -> breadcrumb c.compName)
+                                ; Bind.el(activeTab, fun t -> compTabs setActiveTab t)
+                                ; Bind.el2 compTasks taskLengths (fun (ts, ls) -> tasksTable (mkTaskRows ts ls))
+                                ]
+                        | TabSettings ->
+                            Html.div
+                                [ spacer
+                                ; Bind.el2 comp nominals (fun (c, ns) -> compHeader c ns)
+                                ; spacer
+                                ; Bind.el(comp, fun c -> breadcrumb c.compName)
+                                ; Bind.el(activeTab, fun t -> compTabs setActiveTab t)
+                                ; Bind.el(comp, fun c ->
+                                    settingsTable
+                                        {| giveFraction = c.give.giveFraction
+                                        ; earthRadius = c.earth.sphere.radius
+                                        ; earthMath = c.earthMath
+                                        |})
+                                ]
+                        | TabPilots ->
+                            Html.div
+                                [ spacer
+                                ; Bind.el2 comp nominals (fun (c, ns) -> compHeader c ns)
+                                ; spacer
+                                ; Bind.el(comp, fun c -> breadcrumb c.compName)
+                                ; Bind.el(activeTab, fun t -> compTabs setActiveTab t)
+                                ; Bind.el2 compTasks compPilots (fun (ts, ps) -> pilotsTable (ts |> List.map (fun x -> x.taskName), ps))
+                                ])
                 ])
     ]
 

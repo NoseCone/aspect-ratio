@@ -7,6 +7,7 @@ open Sutil.Attr
 open Thoth.Fetch
 
 open Types
+open CompPilots
 
 let view
     (compPrefixStore: IStore<CompPrefix>)

@@ -5,6 +5,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Types.fs" />
+    <Compile Include="CompSettings.fs" />
+    <Compile Include="CompTasks.fs" />
+    <Compile Include="CompPilots.fs" />
+    <Compile Include="CompHeader.fs" />
     <Compile Include="Comps.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>

@@ -88,30 +88,6 @@ let getCompTasks (comp : string) : JS.Promise<Task list> = promise {
     return! Fetch.get url
 }
 
-type PilotStatus =
-    { pilotId: string
-    ; pilotName: string
-    ; pilotStatus: string list
-    }
-    static member Null =
-        { pilotId = ""
-        ; pilotName = ""
-        ; pilotStatus = []
-        }
-    static member Decoder =
-        Decode.list (Decode.list Decode.string) |> Decode.map (function
-            | [[id; name]; status] ->
-                { pilotId = id
-                ; pilotName = name
-                ; pilotStatus = status
-                }
-            | _ -> PilotStatus.Null)
-
-let getCompPilots (comp : string) : JS.Promise<PilotStatus list> = promise {
-    let url = sprintf "http://%s.flaretiming.com/json/gap-point/pilots-status.json" comp
-    return! Fetch.get(url, decoder = Decode.list PilotStatus.Decoder)
-}
-
 type CompPrefix = CompPrefix of string
 type Page = | PageComps | PageComp
 type Tab = TabSettings | TabTasks | TabPilots
