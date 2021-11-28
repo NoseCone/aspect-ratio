@@ -82,43 +82,39 @@ let view () =
             | PageComps ->
                 Comps.view compPrefix comp nominals compTasks compPilots taskLengths page activeTab
             | PageComp ->
-                fragment [
-                    Bind.el(comp, fun c -> breadcrumb c.compName)
-
-                    Bind.el(activeTab, function
-                        | TabTasks ->
-                            Html.div
-                                [ spacer
-                                ; Bind.el2 comp nominals (fun (c, ns) -> compHeader c ns)
-                                ; spacer
-                                ; Bind.el(comp, fun c -> breadcrumb c.compName)
-                                ; Bind.el(activeTab, fun t -> compTabs setActiveTab t)
-                                ; Bind.el2 compTasks taskLengths (fun (ts, ls) -> tasksTable (mkTaskRows ts ls))
-                                ]
-                        | TabSettings ->
-                            Html.div
-                                [ spacer
-                                ; Bind.el2 comp nominals (fun (c, ns) -> compHeader c ns)
-                                ; spacer
-                                ; Bind.el(comp, fun c -> breadcrumb c.compName)
-                                ; Bind.el(activeTab, fun t -> compTabs setActiveTab t)
-                                ; Bind.el(comp, fun c ->
-                                    settingsTable
-                                        {| giveFraction = c.give.giveFraction
-                                        ; earthRadius = c.earth.sphere.radius
-                                        ; earthMath = c.earthMath
-                                        |})
-                                ]
-                        | TabPilots ->
-                            Html.div
-                                [ spacer
-                                ; Bind.el2 comp nominals (fun (c, ns) -> compHeader c ns)
-                                ; spacer
-                                ; Bind.el(comp, fun c -> breadcrumb c.compName)
-                                ; Bind.el(activeTab, fun t -> compTabs setActiveTab t)
-                                ; Bind.el2 compTasks compPilots (fun (ts, ps) -> pilotsTable (ts |> List.map (fun x -> x.taskName), ps))
-                                ])
-                ])
+                Bind.el(activeTab, function
+                    | TabTasks ->
+                        Html.div
+                            [ spacer
+                            ; Bind.el2 comp nominals (fun (c, ns) -> compHeader c ns)
+                            ; spacer
+                            ; Bind.el(comp, fun c -> breadcrumb c.compName)
+                            ; Bind.el(activeTab, fun t -> compTabs setActiveTab t)
+                            ; Bind.el2 compTasks taskLengths (fun (ts, ls) -> tasksTable (mkTaskRows ts ls))
+                            ]
+                    | TabSettings ->
+                        Html.div
+                            [ spacer
+                            ; Bind.el2 comp nominals (fun (c, ns) -> compHeader c ns)
+                            ; spacer
+                            ; Bind.el(comp, fun c -> breadcrumb c.compName)
+                            ; Bind.el(activeTab, fun t -> compTabs setActiveTab t)
+                            ; Bind.el(comp, fun c ->
+                                settingsTable
+                                    {| giveFraction = c.give.giveFraction
+                                    ; earthRadius = c.earth.sphere.radius
+                                    ; earthMath = c.earthMath
+                                    |})
+                            ]
+                    | TabPilots ->
+                        Html.div
+                            [ spacer
+                            ; Bind.el2 comp nominals (fun (c, ns) -> compHeader c ns)
+                            ; spacer
+                            ; Bind.el(comp, fun c -> breadcrumb c.compName)
+                            ; Bind.el(activeTab, fun t -> compTabs setActiveTab t)
+                            ; Bind.el2 compTasks compPilots (fun (ts, ps) -> pilotsTable (ts |> List.map (fun x -> x.taskName), ps))
+                            ]))
     ]
 
 view () |> Program.mountElement "sutil"
