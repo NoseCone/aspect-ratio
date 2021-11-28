@@ -16,7 +16,7 @@ let breadcrumb (compName: string) = Html.nav [
             Html.li [
                 Html.a [
                     Attr.href "/"
-                    text "Leading Edge (Sutil)"
+                    text "Aspect Ratio (Sutil)"
                 ]
             ]
             Html.li [
