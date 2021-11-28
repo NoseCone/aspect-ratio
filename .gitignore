@@ -1,0 +1,11 @@
+node_modules
+bin
+obj
+packages
+.ionide/symbolCache.db
+.paket/Paket.Restore.targets
+*.map
+*.fs.js
+build
+src/site.css
+package-lock.json
