@@ -12,7 +12,7 @@ let breadcrumb (compName: string) = Html.nav [
             Html.li [
                 Html.a [
                     Attr.href "/"
-                    text "Leading Edge (Feliz)"
+                    text "Leading Edge (Sutil)"
                 ]
             ]
             Html.li [
@@ -50,8 +50,14 @@ let compTabs (setTab: Tab -> Unit) (tab: Tab): SutilElement =
 let view () =
 
     let compPrefix = Store.make (CompPrefix "")
+    let comp = Store.make Comp.Null
+    let nominals = Store.make Nominals.Null
+    let compTasks = Store.make []
+    let compPilots = Store.make []
+    let taskLengths = Store.make []
+
     let page = Store.make PageComps
-    let tab= Store.make TabTasks
+    let tab = Store.make TabTasks
 
     let setPage p = page |> Store.modify (fun _ -> p)
     let setTab t = tab |> Store.modify (fun _ -> t)
@@ -59,32 +65,13 @@ let view () =
     Html.div [
         disposeOnUnmount [ page; tab ]
 
-        Html.div [
-            Html.button [
-                class' "button"
-                onClick (fun _ -> setPage PageComps) []
-                text "Comps"
-            ]
-
-            Html.button [
-                class' "button"
-                onClick (fun _ -> setPage PageComp) []
-                text "Comp"
-            ]
-        ]
-
-        spacer
-        Bind.el(compPrefix, fun cp -> text $"CompPrefix = {cp}")
-        spacer
-        Bind.el(page, fun p -> text $"Page = {p}")
-        spacer
-
-        breadcrumb "COMP"
-
         Bind.el(page, function
-            | PageComps -> Comps.view (compPrefix, page, tab)
+            | PageComps ->
+                Comps.view compPrefix comp nominals compTasks compPilots taskLengths page tab
             | PageComp ->
                 fragment [
+                    Bind.el(comp, fun c -> breadcrumb c.compName)
+
                     Bind.el(tab, fun t -> compTabs setTab t)
 
                     Bind.el(tab, function

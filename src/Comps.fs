@@ -1,16 +1,55 @@
 module Comps
 
+open Fable.Core
 open Sutil
 open Sutil.DOM
 open Sutil.Attr
+open Thoth.Fetch
 
 open Types
 
-let view (compPrefix: IStore<CompPrefix>, page: IStore<Page>, tab: IStore<Tab>) =
-    let comp s _ =
-            compPrefix |> Store.modify (fun _ -> CompPrefix s)
-            page |> Store.modify (fun _ -> PageComp)
-            tab |> Store.modify (fun _ -> TabTasks)
+let view
+    (compPrefixStore: IStore<CompPrefix>)
+    (compStore: IStore<Comp>)
+    (nominalsStore: IStore<Nominals>)
+    (tasksStore: IStore<Task list>)
+    (pilotsStore: IStore<PilotStatus list>)
+    (taskLengthStore: IStore<TaskLength list>)
+    (pageStore: IStore<Page>)
+    (tabStore: IStore<Tab>) =
+    
+    let setComp c = compStore |> Store.modify (fun _ -> c)
+    let setNominals n = nominalsStore |> Store.modify (fun _ -> n)
+    let setCompTasks ts = tasksStore |> Store.modify (fun _ -> ts)
+    let setCompPilots ps = pilotsStore |> Store.modify (fun _ -> ps)
+    let setTaskLengths ls = taskLengthStore |> Store.modify (fun _ -> ls)
+
+    let comp compPrefix _ =
+            ignore <| Promise.Parallel [
+                promise {
+                    let! comp = getComp compPrefix
+                    setComp comp
+                }
+                promise {
+                    let! nominals = getNominals compPrefix
+                    setNominals nominals
+                }
+                promise {
+                    let! xs = getCompTasks compPrefix
+                    setCompTasks xs
+                }
+                promise {
+                    let! xs = getCompPilots compPrefix
+                    setCompPilots xs
+                }
+                promise {
+                    let! xs = getTaskLengths compPrefix
+                    setTaskLengths xs
+                }
+            ]
+            compPrefixStore |> Store.modify (fun _ -> CompPrefix compPrefix)
+            pageStore |> Store.modify (fun _ -> PageComp)
+            tabStore |> Store.modify (fun _ -> TabTasks)
 
     Html.div [
         Attr.id "content"
