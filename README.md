@@ -1,4 +1,4 @@
-# Flare Timing in Sutil
+# Sutil Nose Cone
 
 Before developing or building for deployment run:
 ```
